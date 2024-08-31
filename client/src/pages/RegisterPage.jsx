@@ -13,13 +13,12 @@ const RegisterPage = () => {
   });
 
   const [passwordMatch, setPasswordMatch] = useState(true);
-
   const navigate = useNavigate();
 
   // Handle input changes
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData(prevData => ({
+    setFormData((prevData) => ({
       ...prevData,
       [name]: name === "profileImage" ? files[0] : value,
     }));
@@ -27,7 +26,10 @@ const RegisterPage = () => {
 
   // Validate password match
   useEffect(() => {
-    setPasswordMatch(formData.password === formData.confirmPassword || formData.confirmPassword === "");
+    setPasswordMatch(
+      formData.password === formData.confirmPassword ||
+        formData.confirmPassword === ""
+    );
   }, [formData.password, formData.confirmPassword]);
 
   // Handle form submission
@@ -37,20 +39,25 @@ const RegisterPage = () => {
     try {
       const registerForm = new FormData();
       for (const key in formData) {
-        if (formData[key]) { // Only append if the value is not null/undefined
+        if (formData[key]) {
           registerForm.append(key, formData[key]);
         }
       }
 
-      const response = await fetch("http://localhost:3001/auth/register", {
-        method: "POST",
-        body: registerForm,
-      });
+      const response = await fetch(
+        "https://dream-nest-yd6g.onrender.com/auth/register",
+        {
+          method: "POST",
+          body: registerForm,
+        }
+      );
 
       if (response.ok) {
         navigate("/login");
       } else {
+        const errorText = await response.text();
         console.log("Registration failed with status:", response.status);
+        console.log("Error message:", errorText);
       }
     } catch (err) {
       console.log("Registration failed", err.message);
@@ -125,7 +132,9 @@ const RegisterPage = () => {
               style={{ maxWidth: "80px" }}
             />
           )}
-          <button type="submit" disabled={!passwordMatch}>REGISTER</button>
+          <button type="submit" disabled={!passwordMatch}>
+            REGISTER
+          </button>
         </form>
         <a href="/login">Already have an account? Log In Here</a>
       </div>
