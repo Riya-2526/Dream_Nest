@@ -15,45 +15,23 @@ const storage = multer.diskStorage({
     cb(null, file.originalname);
   },
 });
+const upload = multer({ dest: 'uploads/' });
 
-const upload = multer({ storage });
-
-// User Registration Route
-router.post("/register", upload.single("profileImage"), async (req, res) => {
+// Example user registration route
+router.post('/register', upload.single('profileImage'), async (req, res) => {
   try {
     const { firstName, lastName, email, password } = req.body;
     const profileImage = req.file;
 
-    if (!profileImage) {
-      return res.status(400).send("No file uploaded");
-    }
+    // Implement user registration logic here
+    // Example: Save user details to the database
 
-    const profileImagePath = profileImage.path;
-
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(409).json({ message: "User already exists!" });
-    }
-
-    const salt = await bcrypt.genSalt();
-    const hashedPassword = await bcrypt.hash(password, salt);
-
-    const newUser = new User({
-      firstName,
-      lastName,
-      email,
-      password: hashedPassword,
-      profileImagePath,
-    });
-
-    await newUser.save();
-
-    res.status(200).json({ message: "User registered successfully!", user: newUser });
+    res.status(200).json({ message: 'User registered successfully' });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Registration failed!", error: err.message });
+    res.status(500).json({ message: 'Registration failed', error: err.message });
   }
 });
+
 
 // User Login Route
 router.post("/login", async (req, res) => {
